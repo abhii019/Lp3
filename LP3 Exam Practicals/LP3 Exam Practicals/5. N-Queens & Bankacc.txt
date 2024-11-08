@@ -1,0 +1,233 @@
+def is_safe(board, row, col, N):
+    # Check this row on left side
+    for i in range(col):
+        if board[row][i] == 1:
+            return False
+
+    # Check upper diagonal on left side
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    # Check lower diagonal on left side
+    for i, j in zip(range(row, N, 1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    return True
+
+def solve_nqueens_util(board, col, N):
+    if col == N:
+        return True
+
+    for i in range(N):
+        if is_safe(board, i, col, N):
+            board[i][col] = 1
+
+            if solve_nqueens_util(board, col + 1, N):
+                return True
+
+            # Backtrack if this placement doesn't lead to a solution
+            board[i][col] = 0
+
+    return False
+
+def solve_nqueens(N):
+    board = [[0 for _ in range(N)] for _ in range(N)]
+
+    if not solve_nqueens_util(board, 0, N):
+        print("Solution does not exist")
+        return False
+
+    # Print the board with 'Q' for queens and '*' for empty spaces
+    for i in range(N):
+        for j in range(N):
+            if board[i][j] == 1:
+                print('Q', end=" ")
+            else:
+                print('*', end=" ")
+        print()  # Move to the next line
+    return True
+
+# Get user input for N
+N = int(input("Enter the value of N: "))
+
+solve_nqueens(N)
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+// BT Bank
+
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+contract banking {
+    mapping(address => uint) public user_account;
+    mapping(address => bool) public user_exists;
+
+    function create_account() public payable returns(string memory) {
+        require(user_exists[msg.sender] == false, 'Account already created');
+        
+        if (msg.value == 0) {
+            user_account[msg.sender] = 0;
+            user_exists[msg.sender] = true;
+            return "Account created";
+        }
+
+        require(user_exists[msg.sender] == false, "Account already created");
+        user_account[msg.sender] = msg.value;
+        user_exists[msg.sender] = true;
+        return "Account created";
+    }
+
+    function deposit() public payable returns(string memory) {
+        require(user_exists[msg.sender] == true, "Account not created");
+        require(msg.value > 0, "Value for deposit is Zero");
+        user_account[msg.sender] = user_account[msg.sender] + msg.value;
+        return "Deposited Successfully";
+    }
+
+    function withdraw(uint amount) public payable returns(string memory) {
+        require(user_account[msg.sender] > amount, "Insufficient Balance");
+        require(user_exists[msg.sender] == true, "Account not created");
+        require(amount > 0, "Amount should be more than zero");
+        user_account[msg.sender] = user_account[msg.sender] - amount;
+        msg.sender.transfer(amount);
+        return "Withdrawal Successful";
+    }
+
+    function transfer(address payable userAddress, uint amount) public returns(string memory) {
+        require(user_account[msg.sender] > amount, "Insufficient balance in Bank account");
+        require(user_exists[msg.sender] == true, "Account is not created");
+        require(user_exists[userAddress] == true, "Transfer account does not exist");
+        require(amount > 0, "Amount should be more than zero");
+        user_account[msg.sender] = user_account[msg.sender] - amount;
+        user_account[userAddress] = user_account[userAddress] + amount;
+        return "Transfer Successful";
+    }
+
+    function send_amt(address payable toAddress, uint256 amount) public payable returns(string memory) {
+        require(user_account[msg.sender] > amount, "Insufficient balance in Bank account");
+        require(user_exists[msg.sender] == true, "Account is not created");
+        require(amount > 0, "Amount should be more than zero");
+        user_account[msg.sender] = user_account[msg.sender] - amount;
+        toAddress.transfer(amount);
+        return "Transfer Success";
+    }
+
+    function user_balance() public view returns(uint) {
+        return user_account[msg.sender];
+    }
+
+    function account_exist() public view returns(bool) {
+        return user_exists[msg.sender];
+    }
+}
+
+
+
+---------------------------------------------------------------------------------------------------------------
+
+
+
+public class NQueens {
+    private static int N; // size of the board
+    private static int[][] board; // n x n chessboard
+    private static int solutionCount = 0; // counter for solutions
+
+    // Function to check if it's safe to place a queen at (row, col)
+    static boolean isSafe(int row, int col) {
+        // Check this column on upper side
+        for (int i = 0; i < row; i++) {
+            if (board[i][col] == 1) {
+                return false;
+            }
+        }
+
+        // Check upper diagonal on left side
+        for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 1) {
+                return false;
+            }
+        }
+
+        // Check upper diagonal on right side
+        for (int i = row, j = col; i >= 0 && j < N; i--, j++) {
+            if (board[i][j] == 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Backtracking function to solve the N-Queens problem
+    static boolean solveNQueens(int row) {
+        // Base case: If all queens are placed
+        if (row >= N) {
+            printBoard();
+            solutionCount++;
+            return true; // Indicates a solution was found
+        }
+
+        boolean foundSolution = false;
+
+        // Try placing the queen in all columns of this row
+        for (int col = 0; col < N; col++) {
+            if (isSafe(row, col)) {
+                // Place the queen
+                board[row][col] = 1;
+
+                // Recur to place the rest of the queens
+                foundSolution = solveNQueens(row + 1) || foundSolution;
+
+                // If placing queen in this column doesn't lead to a
+                // solution, backtrack
+                board[row][col] = 0;
+            }
+        }
+
+        return foundSolution;
+    }
+
+    // Function to print the chessboard
+    static void printBoard() {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                System.out.print(board[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        // Set the board size (N)
+        N = 4;
+        board = new int[N][N];
+
+        // Start solving from the first row
+        if (!solveNQueens(0)) {
+            System.out.println("No solution exists");
+        } else {
+            System.out.println("Total solutions found: " + solutionCount);
+        }
+    }
+}
+
+

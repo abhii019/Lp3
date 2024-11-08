@@ -1,0 +1,96 @@
+#DAA 3 - Fractional Knapsack Problem
+
+# Class to represent an item with value and weight
+class Item:
+    def __init__(self, value, weight):
+        self.value = value
+        self.weight = weight
+
+# Function to calculate the maximum value that can be carried
+def fractional_knapsack(items, capacity):
+    # Sort items by value-to-weight ratio in descending order
+    items.sort(key=lambda item: item.value / item.weight, reverse=True)
+    total_value = 0.0  # To store the total value
+    for item in items:
+        if capacity >= item.weight:
+            # If the item can fit in the remaining capacity, take it all
+            capacity -= item.weight
+            total_value += item.value
+        else:
+            # Otherwise, take the fraction of the item that fits
+            fraction = capacity / item.weight
+            total_value += item.value * fraction
+            break  # The knapsack is full
+    return total_value
+
+# Driver code for user input
+if __name__ == "__main__":
+    # Step 1: Input number of items
+    n = int(input("Enter the number of items: "))
+
+    items = []
+    # Step 2: Input value and weight for each item
+    for i in range(n):
+        value = float(input(f"Enter value of item {i + 1}: "))
+        weight = float(input(f"Enter weight of item {i + 1}: "))
+        items.append(Item(value, weight))
+
+    # Step 3: Input the capacity of the knapsack
+    capacity = float(input("Enter the capacity of the knapsack: "))
+
+    # Step 4: Calculate and print the maximum value
+    max_value = fractional_knapsack(items, capacity)
+    print(f"Maximum value we can obtain = {max_value}")
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------
+
+
+import java.util.Arrays; 
+import java.util.Comparator; 
+ 
+class Item { 
+    int value, weight; 
+    Item(int value, int weight) { 
+        this.value = value; 
+        this.weight = weight; 
+    } 
+} 
+public class FractionalKnapsack { 
+    private static double getMaxValue(Item[] items, int capacity) { 
+        Arrays.sort(items, new Comparator<Item>() { 
+            @Override 
+            public int compare(Item o1, Item o2) { 
+                double r1 = (double) o1.value / o1.weight; 
+                double r2 = (double) o2.value / o2.weight; 
+                return Double.compare(r2, r1); 
+            } 
+        }); 
+ 
+        double totalValue = 0; 
+        for (Item item : items) { 
+            if (capacity - item.weight >= 0) { 
+                capacity -= item.weight; 
+                totalValue += item.value; 
+            } else { 
+                totalValue += item.value * ((double) capacity / item.weight); 
+                break; 
+            } 
+        } 
+        return totalValue; 
+    } 
+    public static void main(String[] args) { 
+        Item[] items = { new Item(60, 10), new Item(100, 20), new Item(120, 
+30) }; 
+        int capacity = 50; 
+        double maxValue = getMaxValue(items, capacity); 
+        System.out.println("Maximum value we can obtain = " + maxValue); 
+    } 
+} 
